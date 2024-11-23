@@ -193,3 +193,11 @@ export interface PokemonByName {
   types: string[];
   abilities: string[];
 }
+
+export interface PokemonByType {
+  name: string;
+  type: string;
+}
+export interface PokemonList {
+  pokemon: { pokemon: { name: string; url: string }; slot: number }[];
+}
