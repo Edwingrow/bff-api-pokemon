@@ -1,26 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePokemonDto } from './dto/create-pokemon.dto';
-import { UpdatePokemonDto } from './dto/update-pokemon.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CustomHttpService } from 'src/custom-http/custom-http.service';
+import { PokemonByName, Pokemons } from './interface/Pokemons.interface';
+import { getFormattedDate } from 'src/utils/date.utils';
 
 @Injectable()
 export class PokemonsService {
-  create(createPokemonDto: CreatePokemonDto) {
-    return 'This action adds a new pokemon';
-  }
+ constructor(
+    private readonly customHttpService: CustomHttpService,
+ ) {}
 
-  findAll() {
-    return `This action returns all pokemons`;
-  }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pokemon`;
-  }
+  async getPokemonByName(name: string) : Promise<PokemonByName> {
+    try {
+      const pokemon = await this.customHttpService.get<Pokemons>(`pokemon/${name}`); 
 
-  update(id: number, updatePokemonDto: UpdatePokemonDto) {
-    return `This action updates a #${id} pokemon`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} pokemon`;
+      if (!pokemon || !pokemon.name || !pokemon.types || !pokemon.abilities) {
+        throw new NotFoundException(`Pokemon ${name} not found`);
+    }
+    const pokemonByName: PokemonByName = {
+      name: pokemon.name,
+      types: pokemon.types.map(type => type.type.name) || [], 
+      abilities: pokemon.abilities.map(ability => ability.ability.name) || [],
+    };
+      return pokemonByName;
+    }
+    catch (error) {
+      console.log(`Error: getPokemonByName - ${error}`, getFormattedDate());
+      throw new NotFoundException('Pokemon by name not found');
+    }
   }
 }
