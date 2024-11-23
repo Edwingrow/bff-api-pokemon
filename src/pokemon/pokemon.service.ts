@@ -14,7 +14,7 @@ export class PokemonService {
 
   async getPokemonByName(name: string): Promise<PokemonByName> {
     try {
-      return this.getPokemonById(name);
+      return this.getPokemonByIdOrName(name);
     }
     catch (error) {
       console.log(`Error: getPokemonByName - ${error}`, getFormattedDate());
@@ -40,8 +40,8 @@ export class PokemonService {
 
   async getRandomPokemon(): Promise<PokemonByName> {
     try {
-      const randomId = Math.floor(Math.random() * 898) + 1;
-      return this.getPokemonById(randomId.toString());
+      const randomId = Math.floor(Math.random() * 151) + 1;
+      return this.getPokemonByIdOrName(randomId.toString());
     }
     catch (error) {
       console.log(`Error: getRandomPokemon - ${error}`, getFormattedDate());
@@ -50,7 +50,7 @@ export class PokemonService {
   }
 
 
-  private getPokemonById = async (Params: string ): Promise<PokemonByName> => {
+  private getPokemonByIdOrName = async (Params: string ): Promise<PokemonByName> => {
     try {
       const  pokemon = await this.customHttpService.get<Pokemons>(`pokemon/${Params}`);
       return this.formatPokemon(pokemon);
