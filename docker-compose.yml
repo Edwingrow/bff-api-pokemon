@@ -1,0 +1,31 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - bff-api-pokemon
+    image: backend-bff-api-pokemon
+    container_name: backend-bff-api-pokemon
+    ports:
+      - "${PORT}:3000"
+    depends_on:
+      - redis
+    environment:
+      - POKEMON_API_BASE_URL=${POKEMON_API_BASE_URL}
+      - PORT=${PORT}
+    
+  redis:
+    image: redis:7.2-alpine3.20
+    container_name: redis
+    restart: always
+    ports:
+      - "${PORT_DB}:6379"
+    networks:
+      - bff-api-pokemon
+    
+
+
+
+networks:
+  bff-api-pokemon:

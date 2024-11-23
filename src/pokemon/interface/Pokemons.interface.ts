@@ -192,6 +192,10 @@ export interface PokemonByName {
   name: string;
   types: string[];
   abilities: string[];
+  numberOfAbilities: number;
+  frontImage: string;
+  moves: string[];
+  NumberOfMoves: number;
 }
 
 export interface PokemonByType {

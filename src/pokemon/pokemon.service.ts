@@ -10,24 +10,7 @@ export class PokemonService {
   ) { }
 
 
-  // async getPokemonByName(name: string): Promise<PokemonByName> {
-  //   try {
-  //     const pokemon = await this.customHttpService.get<Pokemons>(`pokemon/${name}`);
 
-  //     if (!pokemon || !pokemon.name || !pokemon.types || !pokemon.abilities) throw new NotFoundException(`Pokemon ${name} not found`);
-
-  //     const pokemonByName: PokemonByName = {
-  //       name: pokemon.name,
-  //       types: pokemon.types.map(type => type.type.name) || [],
-  //       abilities: pokemon.abilities.map(ability => ability.ability.name) || [],
-  //     };
-  //     return pokemonByName;
-  //   }
-  //   catch (error) {
-  //     console.log(`Error: getPokemonByName - ${error}`, getFormattedDate());
-  //     throw new NotFoundException('Pokemon by name not found');
-  //   }
-  // }
 
   async getPokemonByName(name: string): Promise<PokemonByName> {
     try {
@@ -35,7 +18,7 @@ export class PokemonService {
     }
     catch (error) {
       console.log(`Error: getPokemonByName - ${error}`, getFormattedDate());
-      throw new NotFoundException('Pokemon by name not')
+      throw new NotFoundException('Pokemon by name not found')
       }
   }
 
@@ -43,12 +26,15 @@ export class PokemonService {
     try {
       
       const TypeId = await this.getPokemonListByType(type);
+      if (!TypeId) throw new NotFoundException('Type list not found or Pokemon not found');
+      
       const pokemonList = await this.customHttpService.get<PokemonList>(`type/${TypeId}`);
       return pokemonList.pokemon.map(pokemon => ({ name: pokemon.pokemon.name, type }));
     }
     catch (error) {
       console.log(`Error: getPokemonByType - ${error}`, getFormattedDate());
-      throw new NotFoundException('Pokemon by type not found');
+      throw new NotFoundException('Type list not found or Pokemon not found');
+     
     }
   }
 
@@ -71,18 +57,26 @@ export class PokemonService {
     }
     catch (error) {
       console.log(`Error: getPokemonById - ${error}`, getFormattedDate());
-      throw new NotFoundException('Pokemon by id not found');
+      throw new NotFoundException(`Pokemon not found: ${Params}`, getFormattedDate());
     }
   }
-  
+
   private formatPokemon(pokemon: Pokemons): PokemonByName {
     if (!pokemon || !pokemon.name || !pokemon.types || !pokemon.abilities) {
         throw new NotFoundException('Invalid Pokemon data');
     }
+    const numberOfAbilities = pokemon.abilities.length;
+    const frontImage = pokemon.sprites.front_default;
+    const moves = pokemon.moves.map(move => move.move.name);
+    const NumberOfMoves = moves.length
     return {
         name: pokemon.name,
         types: pokemon.types.map(type => type.type.name),
+        numberOfAbilities,
         abilities: pokemon.abilities.map(ability => ability.ability.name),
+        frontImage,
+        NumberOfMoves,
+        moves
     };
 }
 
@@ -90,15 +84,16 @@ export class PokemonService {
     try {
       const typeData = await this.customHttpService.get<{ results: { name: string; url: string }[] }>('type');
       const typeUrl = typeData.results.find(typeData => typeData.name === type).url
-      if (!typeUrl) throw new NotFoundException(`Type ${type} not found`);
+      if (!typeUrl)  return null
 
       const TypeId = this.extractNumberFromUrl(typeUrl);
-      if(!TypeId) throw new NotFoundException(`Type ${type} not found`);
+      if(!TypeId) return null
+
       return TypeId
     }
     catch (error) {
       console.log(`Error: getPokemonListByType - ${error}`, getFormattedDate());
-      throw new NotFoundException('Pokemon list by type not found');
+      return null
     }
   }
 
