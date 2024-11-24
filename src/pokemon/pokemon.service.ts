@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CustomHttpService } from 'src/custom-http/custom-http.service';
+import { CustomHttpService } from '../custom-http/custom-http.service';
 import { PokemonByName, PokemonByType, PokemonList, Pokemons } from './interface/Pokemons.interface';
-import { getFormattedDate } from 'src/utils/date.utils';
+import { getFormattedDate } from '../utils/date.utils';
 
 @Injectable()
 export class PokemonService {
@@ -50,7 +50,7 @@ export class PokemonService {
   }
 
 
-  private getPokemonByIdOrName = async (Params: string ): Promise<PokemonByName> => {
+   getPokemonByIdOrName = async (Params: string ): Promise<PokemonByName> => {
     try {
       const  pokemon = await this.customHttpService.get<Pokemons>(`pokemon/${Params}`);
       return this.formatPokemon(pokemon);
@@ -65,6 +65,7 @@ export class PokemonService {
     if (!pokemon || !pokemon.name || !pokemon.types || !pokemon.abilities) {
         throw new NotFoundException('Invalid Pokemon data');
     }
+    
     const numberOfAbilities = pokemon.abilities.length;
     const frontImage = pokemon.sprites.front_default;
     const moves = pokemon.moves.map(move => move.move.name);

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { CacheModule } from './cache/cache.module';
 import { CustomHttpModule } from './custom-http/custom-http.module';
 import { ConfigModule } from '@nestjs/config';
 import { PokemonModule } from './pokemon/pokemon.module';
+import { CacheConfigModule } from './cache-config/cache-config.module';
 
 @Module({
   imports: [
@@ -10,7 +10,7 @@ import { PokemonModule } from './pokemon/pokemon.module';
       isGlobal: true,
     }),
     PokemonModule, 
-    CacheModule, 
+    CacheConfigModule, 
     CustomHttpModule],
   controllers: [],
   providers: [],

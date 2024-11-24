@@ -1,7 +1,7 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
-import { getFormattedDate } from 'src/utils/date.utils';
+import { AxiosAdapter } from '../common/adapters/axios.adapter';
+import { getFormattedDate } from '../utils/date.utils';
 
 @Injectable()
 export class CustomHttpService {
