@@ -1,13 +1,11 @@
-import { Controller, Get, Param, UseInterceptors, UsePipes } from '@nestjs/common';
+import { Controller, Get, Param, UsePipes } from '@nestjs/common';
 import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PokemonService } from './pokemon.service';
 import { Pokemon } from './entities/pokemon.entity';
 import { PokemonType } from './entities/pokemonType.entity';
 import { ValidateStringPipe } from './pipes/validate-string-type.pipe';
-import { CacheConfigService } from '@src/cache-config/cache-config.service';
 
 @ApiTags('Pokemon')
-@UseInterceptors(CacheConfigService)
 @Controller('pokemon')
 export class PokemonController {
   constructor(private readonly pokemonService: PokemonService) {}
@@ -63,7 +61,6 @@ export class PokemonController {
   getPokemonByName(@Param('name') name: string) {
     return this.pokemonService.getPokemonByName(name);
   }
-
 
   
 }

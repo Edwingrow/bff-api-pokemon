@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CustomHttpModule } from 'src/custom-http/custom-http.module';
+import { CustomHttpModule } from '../custom-http/custom-http.module';
 import { PokemonController } from './pokemon.controller';
 import { PokemonService } from './pokemon.service';
 

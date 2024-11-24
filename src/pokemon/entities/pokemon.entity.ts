@@ -17,7 +17,7 @@ export class Pokemon {
     description: 'Types of the pokemon',
     example: ['fire', 'flying'],
   })
-  type: string[];
+  types: string[];
 
   @ApiProperty({
     description: 'Number of abilities',

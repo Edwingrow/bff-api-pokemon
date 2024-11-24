@@ -8,7 +8,7 @@
 2. Instalar dependencias con ```yarn install```
 3. clonar archivo ```.env.example ```y renombrar a ```.env```
 4. Configurar variables de entorno
-5. Levantar base de datos de REDIS ``` docker-compose up -d ```
+5. Levantar base de datos de  redis con ```docker-compose up -d```
 6. Levantar servidor con ```yarn start:dev```
 
 

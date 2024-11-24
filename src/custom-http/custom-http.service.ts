@@ -1,7 +1,6 @@
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosAdapter } from '../common/adapters/axios.adapter';
-import { getFormattedDate } from '../utils/date.utils';
 
 @Injectable()
 export class CustomHttpService {
@@ -17,9 +16,8 @@ export class CustomHttpService {
     try {
       const response = await this.api.get<T>(`${this.baseUrl}/${endpoint}`);
       return response;
-    } catch (error) {
-      console.log(`Error: get - ${error}`,getFormattedDate());
-      throw new BadRequestException('Error getting data', error);
+    } catch{
+      throw new BadRequestException('Error getting data');
     }
   }
 }

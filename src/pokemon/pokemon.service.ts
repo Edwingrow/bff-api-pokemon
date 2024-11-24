@@ -1,23 +1,27 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CustomHttpService } from '../custom-http/custom-http.service';
-import { PokemonByName, PokemonByType, PokemonList, Pokemons } from './interface/Pokemons.interface';
-import { getFormattedDate } from '../utils/date.utils';
+import { PokemonByName, PokemonByType, PokemonList, Pokemons, TypeDataResponse } from './interface/Pokemons.interface';
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
+import { CacheUtil } from '../utils/cache.util';
 
 @Injectable()
 export class PokemonService {
+  private cacheUtil: CacheUtil;
   constructor(
     private readonly customHttpService: CustomHttpService,
-  ) { }
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) { 
+    this.cacheUtil = new CacheUtil(cacheManager);
+  }
 
 
 
 
   async getPokemonByName(name: string): Promise<PokemonByName> {
     try {
-      return this.getPokemonByIdOrName(name);
+      return this.getPokemonByIdOrName(name);  
     }
-    catch (error) {
-      console.log(`Error: getPokemonByName - ${error}`, getFormattedDate());
+    catch {
       throw new NotFoundException('Pokemon by name not found')
       }
   }
@@ -27,12 +31,15 @@ export class PokemonService {
       
       const TypeId = await this.getPokemonListByType(type);
       if (!TypeId) throw new NotFoundException('Type list not found or Pokemon not found');
-      
+    
+      const key = this.cacheUtil.GenerateKey('getPokemonByType', TypeId)
       const pokemonList = await this.customHttpService.get<PokemonList>(`type/${TypeId}`);
-      return pokemonList.pokemon.map(pokemon => ({ name: pokemon.pokemon.name, type }));
+      const cachePokemonList = await this.cacheUtil.checkCache(key, pokemonList, 60000);
+      
+      
+      return cachePokemonList.pokemon.map(pokemon => ({ name: pokemon.pokemon.name, type }));
     }
-    catch (error) {
-      console.log(`Error: getPokemonByType - ${error}`, getFormattedDate());
+    catch {
       throw new NotFoundException('Type list not found or Pokemon not found');
      
     }
@@ -43,8 +50,7 @@ export class PokemonService {
       const randomId = Math.floor(Math.random() * 151) + 1;
       return this.getPokemonByIdOrName(randomId.toString());
     }
-    catch (error) {
-      console.log(`Error: getRandomPokemon - ${error}`, getFormattedDate());
+    catch {
       throw new NotFoundException('Random Pokemon not found');
     }
   }
@@ -52,17 +58,20 @@ export class PokemonService {
 
    getPokemonByIdOrName = async (Params: string ): Promise<PokemonByName> => {
     try {
+     
       const  pokemon = await this.customHttpService.get<Pokemons>(`pokemon/${Params}`);
-      return this.formatPokemon(pokemon);
+      const key = this.cacheUtil.GenerateKey('getPokemonById', Params)
+      const cachePokemon = await this.cacheUtil.checkCache(key, pokemon, 60000); 
+
+      return this.formatPokemon(cachePokemon);
     }
-    catch (error) {
-      console.log(`Error: getPokemonById - ${error}`, getFormattedDate());
-      throw new NotFoundException(`Pokemon not found: ${Params}`, getFormattedDate());
+    catch {
+      throw new NotFoundException(`Pokemon not found: ${Params}`);
     }
   }
 
   private formatPokemon(pokemon: Pokemons): PokemonByName {
-    if (!pokemon || !pokemon.name || !pokemon.types || !pokemon.abilities) {
+    if (!pokemon) {
         throw new NotFoundException('Invalid Pokemon data');
     }
     
@@ -83,17 +92,19 @@ export class PokemonService {
 
   private async getPokemonListByType(type: string): Promise<string> {
     try {
-      const typeData = await this.customHttpService.get<{ results: { name: string; url: string }[] }>('type');
+      const typeData = await this.customHttpService.get<TypeDataResponse>('type');
+
       const typeUrl = typeData.results.find(typeData => typeData.name === type).url
       if (!typeUrl)  return null
+      const key = this.cacheUtil.GenerateKey('getPokemonListByType', typeUrl)
+      const cacheType = await this.cacheUtil.checkCache(key, typeUrl, 60000);
 
-      const TypeId = this.extractNumberFromUrl(typeUrl);
+      const TypeId = this.extractNumberFromUrl(cacheType);
       if(!TypeId) return null
 
       return TypeId
     }
-    catch (error) {
-      console.log(`Error: getPokemonListByType - ${error}`, getFormattedDate());
+    catch {
       return null
     }
   }
