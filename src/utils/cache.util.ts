@@ -1,6 +1,5 @@
 import { Cache } from 'cache-manager';
 import { createHash } from 'crypto';
-type KeyArg = string | number | boolean;
 export class CacheUtil {
     constructor(private readonly cacheManager: Cache) { }
     
@@ -17,7 +16,7 @@ export class CacheUtil {
         }
 
     }
-    GenerateKey(key:string, args:KeyArg): string {
+    GenerateKey(key:string, args:string): string {
         const hash = createHash('sha256');
         hash.update(key);
         hash.update(JSON.stringify(args));

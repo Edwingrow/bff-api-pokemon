@@ -14,7 +14,7 @@ const mockCacheManager = {
   reset: jest.fn(),
 };
 
-describe('PokemonService', () => {
+describe('PokemonService TEST', () => {
   let service: PokemonService;
   const randomId = 25; 
   const mockRandomPokemonResponse: Pokemons = {

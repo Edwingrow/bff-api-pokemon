@@ -6,7 +6,7 @@ import { PokemonByName } from './interface/Pokemons.interface';
 import { NotFoundException } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
-describe('PokemonController', () => {
+describe('PokemonController TEST', () => {
   let controller: PokemonController;
   let service: PokemonService;
   beforeEach(async () => {
