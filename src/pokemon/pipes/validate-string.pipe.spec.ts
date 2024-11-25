@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ValidateStringPipe } from './validate-string-type.pipe';
 
-describe('ValidateStringPipe', () => {
+describe('ValidateStringPipe TEST', () => {
   let pipe: ValidateStringPipe;
 
   beforeEach(() => {

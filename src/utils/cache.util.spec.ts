@@ -15,13 +15,13 @@ describe('CacheUtil', () => {
   });
 
   describe('checkCache', () => {
-    it('should return the value from the cache if it exists', async () => {
+    it('should return the value from the cache if it exists', async () => { 
       const key = 'testKey';
       const cachedValue = { data: 'cached data' };
-      (mockCacheManager.get as jest.Mock).mockResolvedValue(cachedValue);
+      (mockCacheManager.get as jest.Mock).mockResolvedValue(JSON.stringify(cachedValue));
 
       const result = await cacheUtil.checkCache(key, { data: 'new data' });
-
+ 
       expect(result).toEqual(cachedValue);
       expect(mockCacheManager.get).toHaveBeenCalledWith(key);
       expect(mockCacheManager.set).not.toHaveBeenCalled();
