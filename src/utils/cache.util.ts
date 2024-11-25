@@ -5,8 +5,8 @@ export class CacheUtil {
     
     async checkCache<T>(key: string, value: T, ttl: number = 60000): Promise<T | null> {
         try {
-            const cachedValue = await this.cacheManager.get<T>(key);
-            if (cachedValue) return cachedValue;
+            const cachedValue = await this.cacheManager.get<string>(key);  
+            if (cachedValue) return JSON.parse(cachedValue);
 
             const ValueSerialized = JSON.stringify(value);
             await this.cacheManager.set(key, ValueSerialized, ttl);
